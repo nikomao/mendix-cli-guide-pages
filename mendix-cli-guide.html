@@ -182,6 +182,23 @@
     background: rgba(255, 255, 255, 0.7);
   }
 
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 24, 31, 0.34);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+    z-index: 30;
+  }
+
+  .sidebar-backdrop.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 284px;
@@ -889,6 +906,10 @@
   }
 
   @media (max-width: 1120px) {
+    body.has-mobile-sidebar {
+      overflow: hidden;
+    }
+
     .hero,
     .layout,
     .footer-card {
@@ -896,9 +917,22 @@
     }
 
     .sidebar {
-      position: static;
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      top: 84px;
+      z-index: 35;
       order: -1;
-      display: none;
+      display: grid;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-10px) scale(0.985);
+      transform-origin: top center;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+      max-height: calc(100vh - 104px);
+      overflow: auto;
+      padding-bottom: 8px;
     }
 
     .main {
@@ -906,7 +940,15 @@
     }
 
     .sidebar.is-open {
-      display: grid;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .sidebar-card {
+      background: rgba(255, 251, 244, 0.98);
+      box-shadow: 0 18px 48px rgba(30, 24, 16, 0.16);
     }
 
     .mobile-toc {
@@ -928,17 +970,65 @@
   @media (max-width: 640px) {
     .page {
       width: min(var(--max), calc(100% - 20px));
-      padding-top: 14px;
+      padding-top: 10px;
+      padding-bottom: 40px;
     }
 
     .topbar {
-      flex-direction: column;
-      align-items: stretch;
-      border-radius: 26px;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 20px;
+      top: 8px;
+      margin-bottom: 16px;
+    }
+
+    .brand {
+      min-width: 0;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 13px;
+      flex: none;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy strong {
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .brand-copy span {
+      font-size: 11px;
+      line-height: 1.35;
     }
 
     .toolbar {
-      justify-content: space-between;
+      justify-content: stretch;
+      gap: 8px;
+    }
+
+    .toc-toggle {
+      flex: 1 1 0;
+      justify-content: center;
+      min-height: 42px;
+    }
+
+    .lang-switch {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .lang-switch button {
+      flex: 1 1 0;
+      min-height: 42px;
+      padding-inline: 10px;
     }
 
     .hero-main,
@@ -948,8 +1038,8 @@
     .quick-card,
     .footer-card,
     .mini-card {
-      padding: 20px;
-      border-radius: 22px;
+      padding: 18px;
+      border-radius: 18px;
     }
 
     .quick-grid,
@@ -963,21 +1053,354 @@
 
     .section-head {
       display: grid;
-      gap: 10px;
+      gap: 8px;
+      margin-bottom: 14px;
     }
 
     h1 {
-      font-size: 2.35rem;
+      font-size: clamp(1.9rem, 10vw, 2.4rem);
+      max-width: none;
+      line-height: 1.04;
+      margin-bottom: 8px;
     }
 
     .lead {
-      font-size: 16px;
+      font-size: 14px;
+      line-height: 1.62;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+    }
+
+    h3 {
+      font-size: 17px;
+    }
+
+    p,
+    li,
+    td {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .hero {
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .hero-main {
+      padding: 16px;
+    }
+
+    .hero-main::after {
+      right: -132px;
+      top: -124px;
+      width: 210px;
+      height: 210px;
+      opacity: 0.58;
+    }
+
+    .eyebrow {
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      padding: 6px 9px;
+      font-size: 10px;
+    }
+
+    .hero-actions,
+    .footer-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .button {
+      width: 100%;
+      min-height: 44px;
+      padding: 11px 13px;
+      font-size: 13px;
+    }
+
+    .metrics {
+      gap: 6px;
+    }
+
+    .metric {
+      padding: 10px 11px;
+    }
+
+    .metric strong {
+      font-size: 15px;
+    }
+
+    .metric span {
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .hero-side ul {
+      gap: 6px;
+    }
+
+    .hero-side li,
+    .hero-side p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .quick-card .mono {
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+
+    .quick-card h3 {
+      margin-bottom: 6px;
+    }
+
+    .step {
+      width: fit-content;
+      padding: 6px 9px;
+      font-size: 11px;
+    }
+
+    .table-wrap {
+      margin-top: 12px;
+      border-radius: 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: inset -18px 0 16px -16px rgba(31, 42, 54, 0.12);
+    }
+
+    table {
+      min-width: 0;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .table-wrap.is-cardified {
+      overflow: visible;
+      box-shadow: none;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      backdrop-filter: none;
+    }
+
+    .table-wrap.is-cardified table,
+    .table-wrap.is-cardified tbody,
+    .table-wrap.is-cardified tr,
+    .table-wrap.is-cardified td {
+      display: block;
+      width: 100%;
+    }
+
+    .table-wrap.is-cardified thead {
+      display: none;
+    }
+
+    .table-wrap.is-cardified tbody {
+      display: grid;
+      gap: 10px;
+    }
+
+    .table-wrap.is-cardified tr {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 251, 244, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .table-wrap.is-cardified td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table-wrap.is-cardified tbody tr td:last-child {
+      border-bottom: none;
+    }
+
+    .table-wrap.is-cardified td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .code-block {
+      border-radius: 16px;
+      margin-top: 12px;
+    }
+
+    .code-head {
+      align-items: flex-start;
+      padding: 9px 11px;
+      gap: 6px;
+    }
+
+    .code-head strong {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .code-title {
+      gap: 6px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .code-tools {
+      width: 100%;
+      justify-content: space-between;
+      margin-left: 0;
+      gap: 6px;
+    }
+
+    .copy-button {
+      min-height: 34px;
+      padding: 6px 9px;
+      font-size: 11px;
     }
 
     pre {
-      padding: 16px;
+      padding: 14px;
+      font-size: 11.5px;
+      line-height: 1.55;
+    }
+
+    .command-subtitle {
+      margin-top: 12px;
       font-size: 12px;
-      line-height: 1.5;
+    }
+
+    .doc-meta {
+      gap: 10px;
+    }
+
+    .doc-meta-card {
+      padding: 14px;
+      border-radius: 16px;
+    }
+
+    .doc-meta-card strong {
+      font-size: 15px;
+    }
+
+    .source-links a {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 12px 14px;
+      border-radius: 14px;
+    }
+
+    .source-links a span {
+      font-size: 12px;
+    }
+
+    .sidebar {
+      left: 8px;
+      right: 8px;
+      top: 78px;
+      max-height: calc(100vh - 92px);
+    }
+
+    .sidebar-card {
+      padding: 12px;
+      border-radius: 16px;
+    }
+
+    .toc-list a {
+      padding: 8px 9px;
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .page {
+      width: min(var(--max), calc(100% - 16px));
+    }
+
+    .topbar {
+      padding: 10px 12px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .section-card,
+    .sidebar-card,
+    .quick-card,
+    .footer-card,
+    .mini-card {
+      padding: 16px;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+    }
+
+    .lead {
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 6px 9px;
+    }
+
+    .button {
+      min-height: 42px;
+      font-size: 12px;
+    }
+
+    .metrics {
+      gap: 5px;
+    }
+
+    .metric {
+      padding: 9px 10px;
+    }
+
+    .metric strong {
+      font-size: 14px;
+    }
+
+    .metric span,
+    .hero-side li,
+    .hero-side p {
+      font-size: 12px;
+    }
+
+    .code-head {
+      padding: 8px 10px;
+    }
+
+    .code-tools {
+      align-items: center;
+    }
+
+    .copy-button {
+      min-height: 32px;
+      padding: 5px 8px;
+      font-size: 10px;
+    }
+
+    .sidebar {
+      top: 74px;
     }
   }
 </style>
@@ -993,7 +1416,7 @@
         </div>
       </div>
       <div class="toolbar">
-        <button class="toc-toggle mobile-toc" type="button" data-i18n="tocToggle">目录</button>
+        <button class="toc-toggle mobile-toc" type="button" aria-controls="sidebar" aria-expanded="false" data-i18n="tocToggle">目录</button>
         <div class="lang-switch" data-i18n-aria-label="langSwitcherLabel" aria-label="Language Switcher">
           <button type="button" class="is-active" data-lang-button="zh" data-i18n="langZh">中文</button>
           <button type="button" data-lang-button="en" data-i18n="langEn">EN</button>
@@ -1627,6 +2050,8 @@ mxcli start -p MyApp.mpr</pre>
         </section>
       </main>
 
+      <div class="sidebar-backdrop" aria-hidden="true"></div>
+
       <aside class="sidebar" id="sidebar">
         <section class="sidebar-card">
           <h2 data-i18n="tocTitle">目录导航</h2>
@@ -2082,6 +2507,7 @@ mxcli start -p MyApp.mpr</pre>
   const root = document.documentElement;
   const langButtons = document.querySelectorAll('[data-lang-button]');
   const tocToggle = document.querySelector('.toc-toggle');
+  const sidebarBackdrop = document.querySelector('.sidebar-backdrop');
   const sidebar = document.getElementById('sidebar');
   const tocLinks = Array.from(document.querySelectorAll('.toc-list a[href^="#"]'));
   const progressValue = document.querySelector('.sidebar-progress-value');
@@ -2200,6 +2626,37 @@ mxcli start -p MyApp.mpr</pre>
     });
   }
 
+  function syncResponsiveTables() {
+    document.querySelectorAll('.table-wrap').forEach((wrap) => {
+      const headers = Array.from(wrap.querySelectorAll('thead th')).map((header) => header.textContent.trim());
+      const rows = wrap.querySelectorAll('tbody tr');
+      rows.forEach((row) => {
+        Array.from(row.children).forEach((cell, index) => {
+          if (cell instanceof HTMLElement) {
+            cell.dataset.label = headers[index] || '';
+          }
+        });
+      });
+      wrap.classList.toggle('is-cardified', window.innerWidth <= 640);
+    });
+  }
+
+  function setSidebarOpen(isOpen) {
+    if (!sidebar) {
+      return;
+    }
+
+    const open = Boolean(isOpen) && window.innerWidth <= 1120;
+    sidebar.classList.toggle('is-open', open);
+    document.body.classList.toggle('has-mobile-sidebar', open);
+    if (sidebarBackdrop) {
+      sidebarBackdrop.classList.toggle('is-visible', open);
+    }
+    if (tocToggle) {
+      tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+  }
+
   function applyLanguage(lang) {
     root.lang = lang === 'zh' ? 'zh-CN' : 'en';
     document.querySelectorAll('[data-i18n]').forEach((node) => {
@@ -2222,6 +2679,7 @@ mxcli start -p MyApp.mpr</pre>
       button.textContent = getCopyLabel(lang, copied);
     });
     renderCodeSteps(lang);
+    syncResponsiveTables();
     localStorage.setItem('mxcli-guide-lang', lang);
   }
 
@@ -2297,20 +2755,38 @@ mxcli start -p MyApp.mpr</pre>
 
   tocLinks.forEach((link) => {
     link.addEventListener('click', () => {
-      if (window.innerWidth <= 980) {
-        sidebar.classList.remove('is-open');
+      if (window.innerWidth <= 1120) {
+        setSidebarOpen(false);
       }
     });
   });
 
+  if (sidebarBackdrop) {
+    sidebarBackdrop.addEventListener('click', () => setSidebarOpen(false));
+  }
+
   if (tocToggle) {
     tocToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('is-open');
+      setSidebarOpen(!sidebar.classList.contains('is-open'));
     });
   }
 
+  window.addEventListener('resize', () => {
+    syncResponsiveTables();
+    if (window.innerWidth > 1120) {
+      setSidebarOpen(false);
+    }
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
+      setSidebarOpen(false);
+    }
+  });
+
   const savedLang = localStorage.getItem('mxcli-guide-lang');
   enhanceCodeBlocks();
+  syncResponsiveTables();
   applyLanguage(savedLang === 'en' ? 'en' : 'zh');
   initTocTracking();
 </script>
